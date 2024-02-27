@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Pressable } from 'react-native';
 
-
 export default function App() {
   const [city, setCity] = useState('');
   const [weatherData, setWeatherData] = useState(null);
   const apiKey = '2QOVyWSNAEqBA3pza57LB5DIY07VMuPQ';
   const baseUrl = 'http://dataservice.accuweather.com/';
+
+  const getFormattedDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getDate()}`; //if i wanna
+  };
 
   const getClima = () => {
     fetch(`${baseUrl}locations/v1/cities/search?q=${city}&apikey=${apiKey}&language=pt-br`)
@@ -18,13 +22,17 @@ export default function App() {
       .then(response => response.json())
       .then(weatherData => {
         setWeatherData(weatherData[0]);
+        console.log(weatherData);
       })
       .catch(error => {
         console.error('Error fetching weather:', error);
       });
   };
+
+  const isDayTime = weatherData?.IsDayTime || false;
+  const dayAndMonth = weatherData ? getFormattedDate(weatherData.LocalObservationDateTime) : '';
+
   return (
-    
     <View style={styles.container}>
       <View style={styles.pesquisa}>
         <TextInput
@@ -34,13 +42,28 @@ export default function App() {
           placeholder="Enter city name"
         />
         <Pressable style={styles.button} onPress={getClima}>
-        <Text style={styles.text}>Search!</Text>
+          <Text style={styles.text}>Search!</Text>
         </Pressable>
       </View>
-      <View style={styles.weatherContainer}>
+      <View style={styles.hello}>
         {weatherData && (
-          <Text>Weather in {city}: {weatherData.WeatherText}, Temperature: {weatherData.Temperature.Metric.Value}°C</Text>
+          <>
+            <Text>Hi, {city}</Text>
+            <Text>{isDayTime ? 'Have a good day' : 'Have a good night'}</Text>
+          </>
         )}
+      </View>
+      <View>
+        {weatherData &&(
+          <>
+          <Text>{weatherData.Temperature.Metric.Value}C°</Text>
+          <Text>{weatherData.WeatherText}</Text>
+          </>
+        )}
+      </View>
+
+      <View style={styles.weatherContainer}>
+        {weatherData && <Text>Day {dayAndMonth}</Text>}
       </View>
     </View>
   );
@@ -81,6 +104,10 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: '#FBEAFF',
+  },
+  hello: {
+    paddingTop: 20,
+    paddingLeft: 30,
   }
 
 });
