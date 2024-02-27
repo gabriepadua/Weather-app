@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Pressable } from 'react-native';
 
 
 export default function App() {
@@ -23,22 +23,23 @@ export default function App() {
         console.error('Error fetching weather:', error);
       });
   };
-
   return (
+    
     <View style={styles.container}>
-      <View>
+      <View style={styles.pesquisa}>
         <TextInput
           style={styles.input}
           onChangeText={text => setCity(text)}
           value={city}
           placeholder="Enter city name"
         />
-        
-        <Button title="Enviar!" onPress={getClima} />
+        <Pressable style={styles.button} onPress={getClima}>
+        <Text style={styles.text}>Search!</Text>
+        </Pressable>
       </View>
       <View style={styles.weatherContainer}>
         {weatherData && (
-          <Text>Clima: {weatherData.WeatherText}, Temperatura: {weatherData.Temperature.Metric.Value}°C</Text>
+          <Text>Weather in {city}: {weatherData.WeatherText}, Temperature: {weatherData.Temperature.Metric.Value}°C</Text>
         )}
       </View>
     </View>
@@ -47,13 +48,18 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 0
+
+  },
+
+  pesquisa: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingTop: 50,
+    paddingLeft: 30,
   },
   input: {
     height: 40,
+    width: 220,
     borderColor: 'gray',
     borderRadius: 20,
     borderWidth: 1,
@@ -62,5 +68,19 @@ const styles = StyleSheet.create({
   },
   weatherContainer: {
     marginTop: 20
+  },
+  button: {
+    marginLeft: 10,
+    width: 80,
+    height: 40,
+    backgroundColor: '#453264',
+    borderRadius: 45,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  text: {
+    fontSize: 16,
+    color: '#FBEAFF',
   }
+
 });
