@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Image } from 'react-native';
+import sun from './img/sun.png';
 
 export default function App() {
   const [city, setCity] = useState('');
@@ -27,6 +28,7 @@ export default function App() {
       .catch(error => {
         console.error('Error fetching weather:', error);
       });
+
   };
 
   const isDayTime = weatherData?.IsDayTime || false;
@@ -48,23 +50,22 @@ export default function App() {
       <View style={styles.hello}>
         {weatherData && (
           <>
-            <Text>Hi, {city}</Text>
-            <Text>{isDayTime ? 'Have a good day' : 'Have a good night'}</Text>
+            <Text style={styles.hi}>Hi, {city}</Text>
+            <Text style={styles.have}>{isDayTime ? 'Have a good day' : 'Have a good night'}</Text>
           </>
         )}
       </View>
-      <View>
+      <View style={styles.weatherContainer}>
         {weatherData &&(
           <>
-          <Text>{weatherData.Temperature.Metric.Value}C°</Text>
-          <Text>{weatherData.WeatherText}</Text>
+          <Image source={sun} style={styles.weatherIcons} />
+          <Text style={styles.tempText}>{weatherData.Temperature.Metric.Value}C°</Text>
+          <Text style={styles.weatherText}>{weatherData.WeatherText}</Text>
           </>
         )}
+        {weatherData && <Text style={styles.weatherText}>Day {dayAndMonth}</Text>}
       </View>
-
-      <View style={styles.weatherContainer}>
-        {weatherData && <Text>Day {dayAndMonth}</Text>}
-      </View>
+      
     </View>
   );
 }
@@ -89,8 +90,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10
   },
+  hi: {
+    fontSize: 17
+  },
+  have: {
+    fontSize: 25
+  },
   weatherContainer: {
-    marginTop: 20
+    marginTop: 50,
+    alignItems: 'center',
+  },
+  tempText: {
+    marginTop: 15,
+    fontSize: 50,
+  },
+  weatherText: {
+    fontSize: 25,
   },
   button: {
     marginLeft: 10,
@@ -108,6 +123,9 @@ const styles = StyleSheet.create({
   hello: {
     paddingTop: 20,
     paddingLeft: 30,
-  }
-
+  },
+  weatherIcons: {
+    width: 275,
+    height: 275
+  },
 });
