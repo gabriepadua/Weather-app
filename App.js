@@ -13,23 +13,44 @@ export default function App() {
     return `${date.getDate()}`; //if i wanna
   };
 
+
+
   const getClima = () => {
+    // Reset weatherData to avoid previous data sticking around during the fetch
+    setWeatherData(null);
+  
+    let locationKey;
+  
+    // Fetch data from the first endpoint
     fetch(`${baseUrl}locations/v1/cities/search?q=${city}&apikey=${apiKey}&language=pt-br`)
       .then(response => response.json())
       .then(data => {
-        const locationKey = data[0].Key;
+        locationKey = data[0].Key;
+        console.log('First Endpoint Data:', data);
+        // Return a Promise to chain the next fetch
+        const { EnglishName } = data[0].EnglishName;
+
         return fetch(`${baseUrl}currentconditions/v1/${locationKey}?apikey=${apiKey}`);
       })
       .then(response => response.json())
-      .then(weatherData => {
-        setWeatherData(weatherData[0]);
-        console.log(weatherData);
+      .then(data => {
+        currentConditionsData = data; // Assign data to currentConditionsData
+        console.log('Second Endpoint Data:', currentConditionsData);
+        // Update weatherData with data from the first endpoint
+        setWeatherData(currentConditionsData[0]);
+        // Fetch data from the second endpoint
+        return fetch(`${baseUrl}forecasts/v1/daily/1day/${locationKey}?apikey=${apiKey}&language=pt-br&details=true`);
+      })
+      .then(response => response.json())
+      .then(forecastData => {
+        console.log('Third Endpoint Data:', forecastData);
+        // Merge data from the second endpoint into weatherData
+        setWeatherData(prevData => ({ ...prevData, ...forecastData[0] }));
       })
       .catch(error => {
         console.error('Error fetching weather:', error);
       });
-
-  };
+        };
 
   const isDayTime = weatherData?.IsDayTime || false;
   const dayAndMonth = weatherData ? getFormattedDate(weatherData.LocalObservationDateTime) : '';
@@ -50,7 +71,7 @@ export default function App() {
       <View style={styles.hello}>
         {weatherData && (
           <>
-            <Text style={styles.hi}>Hi, {city}</Text>
+            <Text style={styles.hi}>Hi, {weatherData.EnglishName}</Text>
             <Text style={styles.have}>{isDayTime ? 'Have a good day' : 'Have a good night'}</Text>
           </>
         )}
