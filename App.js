@@ -29,9 +29,7 @@ export default function App() {
     let currentConditionsData;
 
     // Fetch data from the first endpoint
-    fetch(
-      `${baseUrl}locations/v1/cities/search?q=${city}&apikey=${apiKey}&language=pt-br`
-    )
+    fetch(`${baseUrl}locations/v1/cities/search?q=${city}&apikey=${apiKey}`)
       .then((response) => response.json())
       .then((data) => {
         locationData = data[0];
@@ -50,7 +48,7 @@ export default function App() {
 
         // Fetch data from the third endpoint
         return fetch(
-          `${baseUrl}forecasts/v1/daily/1day/${locationKey}?apikey=${apiKey}&language=pt-br&details=true`
+          `${baseUrl}forecasts/v1/daily/1day/${locationKey}?apikey=${apiKey}&details=true`
         );
       })
       .then((response) => response.json())
@@ -61,7 +59,7 @@ export default function App() {
         setWeatherData({
           locationData,
           currentConditionsData: currentConditionsData[0],
-          forecastData: forecastData[0],
+          forecastData: forecastData.DailyForecasts[0],
         });
       })
       .catch((error) => {
@@ -119,26 +117,64 @@ export default function App() {
         )}
       </View>
       <View style={styles.infos}>
-        <View>{weatherData && <Text>Sunrise {weatherData.Sun}</Text>}</View>
-        <View>{weatherData && <Text>Sunset{weatherData.Sun}</Text>}</View>
+        <View>
+          {weatherData && (
+            <Text>
+              Sunrise
+              {weatherData.forecastData.Sun.Rise.substring(11, 16)}
+            </Text>
+          )}
+        </View>
+        <View>
+          {weatherData && (
+            <Text>
+              Sunset {weatherData.forecastData.Sun.Set.substring(11, 16)}
+            </Text>
+          )}
+        </View>
       </View>
       <View style={styles.infos}>
         <View>
-          {weatherData && <Text>Air Quality{weatherData.Category}</Text>}
+          {weatherData && (
+            <Text>
+              Air Quality {weatherData.forecastData.AirAndPollen[0].Category}
+            </Text>
+          )}
         </View>
-        <View>{weatherData && <Text>Humidity{weatherData.Sun}</Text>}</View>
+        <View>
+          {weatherData && (
+            <Text>
+              Humidity{weatherData.forecastData.Day.RelativeHumidity.Average}
+            </Text>
+          )}
+        </View>
       </View>
       <View style={styles.infos}>
-        <View>{weatherData && <Text>Preciptation{weatherData.Sun}</Text>}</View>
-        <View>{weatherData && <Text>CLIMA %{weatherData.Sun}</Text>}</View>
+        <View>
+          {weatherData && (
+            <Text>
+              Preciptation{" "}
+              {weatherData.forecastData.Day.PrecipitationProbability}
+            </Text>
+          )}
+        </View>
+        <View>
+          {weatherData && (
+            <Text>Rain % {weatherData.forecastData.Day.RainProbability}</Text>
+          )}
+        </View>
       </View>
+      <Text style={styles.footer}>Developer: Gabriel Pádua</Text>
     </View>
   );
 }
 
 // {isDayTime ? `weatherData.forecastData.Sun.Set` : `weatherData.forecastData.Moon.Set`}
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: "#322533",
+    height: 1000,
+  },
 
   pesquisa: {
     flexDirection: "row",
@@ -197,5 +233,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     justifyContent: "space-around",
     flexDirection: "row",
+  },
+  footer: {
+    alignContent: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    bottom: 0,
   },
 });
