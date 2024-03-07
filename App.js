@@ -118,49 +118,47 @@ export default function App() {
       </View>
       <View style={styles.infos}>
         <View>
+          <Text>Sunrise</Text>
           {weatherData && (
-            <Text>
-              Sunrise
-              {weatherData.forecastData.Sun.Rise.substring(11, 16)}
-            </Text>
+            <Text>{weatherData.forecastData.Sun.Rise.substring(11, 16)}</Text>
           )}
         </View>
         <View>
+          <Text>Sunset</Text>
           {weatherData && (
-            <Text>
-              Sunset {weatherData.forecastData.Sun.Set.substring(11, 16)}
-            </Text>
+            <Text>{weatherData.forecastData.Sun.Set.substring(11, 16)}</Text>
           )}
         </View>
       </View>
       <View style={styles.infos}>
         <View>
+          <Text>Air Quality</Text>
           {weatherData && (
-            <Text>
-              Air Quality {weatherData.forecastData.AirAndPollen[0].Category}
-            </Text>
+            <Text>{weatherData.forecastData.AirAndPollen[0].Category}</Text>
           )}
         </View>
         <View>
+          <Text>Humidity</Text>
           {weatherData && (
-            <Text>
-              Humidity{weatherData.forecastData.Day.RelativeHumidity.Average}
-            </Text>
+            <Text>{weatherData.forecastData.Day.RelativeHumidity.Average}</Text>
           )}
         </View>
       </View>
       <View style={styles.infos}>
         <View>
+          <Text>Preciptation</Text>
+
           {weatherData && (
             <Text>
-              Preciptation{" "}
-              {weatherData.forecastData.Day.PrecipitationProbability}
+              {weatherData.forecastData.Day.PrecipitationProbability}%
             </Text>
           )}
         </View>
         <View>
+          <Text>Rain</Text>
+
           {weatherData && (
-            <Text>Rain % {weatherData.forecastData.Day.RainProbability}</Text>
+            <Text>{weatherData.forecastData.Day.RainProbability}%</Text>
           )}
         </View>
       </View>
@@ -172,7 +170,6 @@ export default function App() {
 // {isDayTime ? `weatherData.forecastData.Sun.Set` : `weatherData.forecastData.Moon.Set`}
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#322533",
     height: 1000,
   },
 
@@ -238,6 +235,6 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
     textAlign: "center",
-    bottom: 0,
+    bottom: -30,
   },
 });
