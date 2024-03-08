@@ -8,6 +8,11 @@ import {
   Image,
 } from "react-native";
 import sun from "./img/sun.png";
+import wind from "./img/wind.png";
+import sunset from "./img/sunset.png";
+import sunrise from "./img/sunrise.png";
+import rain from "./img/cloudrain.png";
+import wather from "./img/wather.png";
 
 export default function App() {
   const [city, setCity] = useState("");
@@ -116,50 +121,78 @@ export default function App() {
           <Text style={styles.weatherText}>Day {dayAndMonth}</Text>
         )}
       </View>
-      <View style={styles.infos}>
-        <View>
-          <Text>Sunrise</Text>
-          {weatherData && (
-            <Text>{weatherData.forecastData.Sun.Rise.substring(11, 16)}</Text>
-          )}
-        </View>
-        <View>
-          <Text>Sunset</Text>
-          {weatherData && (
-            <Text>{weatherData.forecastData.Sun.Set.substring(11, 16)}</Text>
-          )}
-        </View>
-      </View>
-      <View style={styles.infos}>
-        <View>
-          <Text>Air Quality</Text>
-          {weatherData && (
-            <Text>{weatherData.forecastData.AirAndPollen[0].Category}</Text>
-          )}
-        </View>
-        <View>
-          <Text>Humidity</Text>
-          {weatherData && (
-            <Text>{weatherData.forecastData.Day.RelativeHumidity.Average}</Text>
-          )}
-        </View>
-      </View>
-      <View style={styles.infos}>
-        <View>
-          <Text>Preciptation</Text>
+      <View style={styles.column0}>
+        <View style={styles.column1}>
+          <View style={styles.infoContainer}>
+            <Image source={sunrise} style={styles.littleIcon} />
+            <View>
+              <Text>Sunrise</Text>
+              {weatherData && (
+                <Text>
+                  {weatherData.forecastData.Sun.Rise.substring(11, 16)}
+                </Text>
+              )}
+            </View>
+          </View>
+          <View style={styles.infoContainer}>
+            <Image source={wind} style={styles.littleIcon} />
+            <View>
+              <Text>Air Quality</Text>
+              {weatherData && (
+                <Text>{weatherData.forecastData.AirAndPollen[0].Category}</Text>
+              )}
+            </View>
+          </View>
+          <View style={styles.infoContainer}>
+            <Image source={wather} style={styles.littleIcon} />
+            <View>
+              <Text>Wind Speed</Text>
 
-          {weatherData && (
-            <Text>
-              {weatherData.forecastData.Day.PrecipitationProbability}%
-            </Text>
-          )}
+              {weatherData && (
+                <Text>
+                  {(
+                    weatherData.forecastData.Day.Wind.Speed.Value * 1.60934
+                  ).toFixed(2)}{" "}
+                  km/h
+                </Text>
+              )}
+            </View>
+          </View>
         </View>
-        <View>
-          <Text>Rain</Text>
 
-          {weatherData && (
-            <Text>{weatherData.forecastData.Day.RainProbability}%</Text>
-          )}
+        <View style={styles.column2}>
+          <View style={styles.infoContainer}>
+            <Image source={sunset} style={styles.littleIcon} />
+            <View>
+              <Text>Sunset</Text>
+              {weatherData && (
+                <Text>
+                  {weatherData.forecastData.Sun.Set.substring(11, 16)}
+                </Text>
+              )}
+            </View>
+          </View>
+          <View style={styles.infoContainer}>
+            <Image source={wather} style={styles.littleIcon} />
+            <View>
+              <Text>Humidity</Text>
+              {weatherData && (
+                <Text>
+                  {weatherData.forecastData.Day.RelativeHumidity.Average}%
+                </Text>
+              )}
+            </View>
+          </View>
+          <View style={styles.infoContainer}>
+            <Image source={rain} style={styles.littleIcon} />
+            <View>
+              <Text>Rain</Text>
+
+              {weatherData && (
+                <Text>{weatherData.forecastData.Day.RainProbability}%</Text>
+              )}
+            </View>
+          </View>
         </View>
       </View>
       <Text style={styles.footer}>Developer: Gabriel Pádua</Text>
@@ -195,15 +228,15 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   weatherContainer: {
-    marginTop: 50,
+    marginTop: 40,
     alignItems: "center",
   },
   tempText: {
     marginTop: 15,
-    fontSize: 50,
+    fontSize: 45,
   },
   weatherText: {
-    fontSize: 25,
+    fontSize: 20,
   },
   button: {
     marginLeft: 10,
@@ -223,18 +256,28 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
   },
   weatherIcons: {
-    width: 275,
-    height: 275,
+    width: 250,
+    height: 250,
   },
-  infos: {
-    marginTop: 30,
-    justifyContent: "space-around",
+  column0: {
     flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginTop: 40,
+  },
+  infoContainer: {
+    marginBottom: 30,
+    flexDirection: "row",
+    alignItems: "center",
   },
   footer: {
     alignContent: "center",
     justifyContent: "center",
     textAlign: "center",
-    bottom: -30,
+    bottom: 0,
+  },
+  littleIcon: {
+    height: 50,
+    width: 50,
   },
 });
