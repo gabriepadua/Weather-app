@@ -6,15 +6,19 @@ import {
   TextInput,
   Pressable,
   Image,
+  ImageBackground,
+  Switch,
 } from "react-native";
-import sun from "./img/sun.png";
-import wind from "./img/wind.png";
-import sunset from "./img/sunset.png";
-import sunrise from "./img/sunrise.png";
-import rain from "./img/cloudrain.png";
-import wather from "./img/wather.png";
+
+import { ensolarado } from "./img/weather/ensolarado.png";
 
 export default function App() {
+  // função de modo dark
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => {
+    setIsEnabled((previousState) => !previousState);
+  };
+  // config para a api
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
   const apiKey = "2QOVyWSNAEqBA3pza57LB5DIY07VMuPQ";
@@ -22,7 +26,18 @@ export default function App() {
 
   const getFormattedDate = (dateString) => {
     const date = new Date(dateString);
-    return `${date.getDate()}`; //if i wanna
+    return `${date.getDate()}`;
+  };
+
+  const imageMap = {
+    sun: require("./img/weather/ensolarado.png"),
+    sol: require("./img/weather/ensolarado.png"),
+    sol: require("./img/weather/ensolarado.png"),
+    sol: require("./img/weather/ensolarado.png"),
+    sol: require("./img/weather/ensolarado.png"),
+    sol: require("./img/weather/ensolarado.png"),
+    sol: require("./img/weather/ensolarado.png"),
+    sol: require("./img/weather/ensolarado.png"),
   };
 
   const getClima = () => {
@@ -80,123 +95,182 @@ export default function App() {
     : "";
 
   return (
-    <View style={styles.container}>
-      <View style={styles.pesquisa}>
-        <TextInput
-          style={styles.input}
-          onChangeText={(text) => setCity(text)}
-          value={city}
-          placeholder="Enter city name"
+    <ImageBackground
+      source={
+        isEnabled
+          ? require("./img/bg/bg-dark.png")
+          : require("./img/bg/bg-light.png")
+      }
+      style={styles.image}
+    >
+      <View style={styles.container}>
+        <View style={styles.pesquisa}>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => setCity(text)}
+            value={city}
+            placeholder="Digite sua cidade"
+          />
+          <Pressable style={styles.button} onPress={getClima}>
+            <Text style={styles.text}>Procurar!</Text>
+          </Pressable>
+        </View>
+        <View style={styles.hello}>
+          {weatherData && (
+            <>
+              <Text style={styles.hi}>
+                Hi, {weatherData.locationData.EnglishName},{" "}
+                {weatherData.locationData.Country.LocalizedName}
+              </Text>
+              <Text style={styles.have}>
+                {isDayTime ? "Bom dia" : "Boa noite"}
+              </Text>
+            </>
+          )}
+        </View>
+        <View style={styles.weatherContainer}>
+          {weatherData && (
+            <>
+              <Image source={ensolarado} style={styles.weatherIcons} />
+              <Text style={styles.tempText}>
+                {weatherData.currentConditionsData.Temperature.Metric.Value}C°
+              </Text>
+              <Text style={styles.weatherText}>
+                {weatherData.currentConditionsData.WeatherText}
+              </Text>
+            </>
+          )}
+          {weatherData && (
+            <Text style={styles.weatherText}>Day {dayAndMonth}</Text>
+          )}
+        </View>
+        <View style={styles.column0}>
+          <View style={styles.column1}>
+            <View style={styles.infoContainer}>
+              <Image
+                source={
+                  isEnabled
+                    ? require("./img/icons/iconsdark/icon-nascer-dark.png")
+                    : require("./img/icons/iconslight/icon-nascer-light.png")
+                }
+                style={styles.littleIcon}
+              />
+              <View>
+                <Text>Nascer do Sol</Text>
+                {weatherData && (
+                  <Text>
+                    {weatherData.forecastData.Sun.Rise.substring(11, 16)}
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.infoContainer}>
+              <Image
+                source={
+                  isEnabled
+                    ? require("./img/icons/iconsdark/icon-vento-dark.png")
+                    : require("./img/icons/iconslight/icon-vento-light.png")
+                }
+                style={styles.littleIcon}
+              />
+              <View>
+                <Text>Qualidade do ar</Text>
+                {weatherData && (
+                  <Text>
+                    {weatherData.forecastData.AirAndPollen[0].Category}
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.infoContainer}>
+              <Image
+                source={
+                  isEnabled
+                    ? require("./img/icons/iconsdark/icon-vel-dark.png")
+                    : require("./img/icons/iconslight/icon-vel-light.png")
+                }
+                style={styles.littleIcon}
+              />
+              <View>
+                <Text>Velocidade do vento</Text>
+
+                {weatherData && (
+                  <Text>
+                    {(
+                      weatherData.forecastData.Day.Wind.Speed.Value * 1.60934
+                    ).toFixed(2)}{" "}
+                    km/h
+                  </Text>
+                )}
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.column2}>
+            <View style={styles.infoContainer}>
+              <Image
+                source={
+                  isEnabled
+                    ? require("./img/icons/iconsdark/icon-por-dark.png")
+                    : require("./img/icons/iconslight/icon-por-light.png")
+                }
+                style={styles.littleIcon}
+              />
+              <View>
+                <Text>Pôr do Sol</Text>
+                {weatherData && (
+                  <Text>
+                    {weatherData.forecastData.Sun.Set.substring(11, 16)}
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.infoContainer}>
+              <Image
+                source={
+                  isEnabled
+                    ? require("./img/icons/iconsdark/icon-gota-dark.png")
+                    : require("./img/icons/iconslight/icon-gota-light.png")
+                }
+                style={styles.littleIcon}
+              />
+              <View>
+                <Text>Umidade</Text>
+                {weatherData && (
+                  <Text>
+                    {weatherData.forecastData.Day.RelativeHumidity.Average}%
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.infoContainer}>
+              <Image
+                source={
+                  isEnabled
+                    ? require("./img/icons/iconsdark/icon-chuva-dark.png")
+                    : require("./img/icons/iconslight/icon-chuva-light.png")
+                }
+                style={styles.littleIcon}
+              />
+              <View>
+                <Text>Chuva</Text>
+
+                {weatherData && (
+                  <Text>{weatherData.forecastData.Day.RainProbability}%</Text>
+                )}
+              </View>
+            </View>
+          </View>
+        </View>
+        <Switch
+          trackColor={{ false: "#6326AF", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#6326AF" : "#61D0E1"}
+          onValueChange={toggleSwitch}
+          value={isEnabled}
         />
-        <Pressable style={styles.button} onPress={getClima}>
-          <Text style={styles.text}>Search!</Text>
-        </Pressable>
+        <Text style={styles.footer}>Developer: Gabriel Pádua</Text>
       </View>
-      <View style={styles.hello}>
-        {weatherData && (
-          <>
-            <Text style={styles.hi}>
-              Hi, {weatherData.locationData.EnglishName},{" "}
-              {weatherData.locationData.Country.LocalizedName}
-            </Text>
-            <Text style={styles.have}>
-              {isDayTime ? "Have a good day" : "Have a good night"}
-            </Text>
-          </>
-        )}
-      </View>
-      <View style={styles.weatherContainer}>
-        {weatherData && (
-          <>
-            <Image source={sun} style={styles.weatherIcons} />
-            <Text style={styles.tempText}>
-              {weatherData.currentConditionsData.Temperature.Metric.Value}C°
-            </Text>
-            <Text style={styles.weatherText}>
-              {weatherData.currentConditionsData.WeatherText}
-            </Text>
-          </>
-        )}
-        {weatherData && (
-          <Text style={styles.weatherText}>Day {dayAndMonth}</Text>
-        )}
-      </View>
-      <View style={styles.column0}>
-        <View style={styles.column1}>
-          <View style={styles.infoContainer}>
-            <Image source={sunrise} style={styles.littleIcon} />
-            <View>
-              <Text>Sunrise</Text>
-              {weatherData && (
-                <Text>
-                  {weatherData.forecastData.Sun.Rise.substring(11, 16)}
-                </Text>
-              )}
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <Image source={wind} style={styles.littleIcon} />
-            <View>
-              <Text>Air Quality</Text>
-              {weatherData && (
-                <Text>{weatherData.forecastData.AirAndPollen[0].Category}</Text>
-              )}
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <Image source={wather} style={styles.littleIcon} />
-            <View>
-              <Text>Wind Speed</Text>
-
-              {weatherData && (
-                <Text>
-                  {(
-                    weatherData.forecastData.Day.Wind.Speed.Value * 1.60934
-                  ).toFixed(2)}{" "}
-                  km/h
-                </Text>
-              )}
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.column2}>
-          <View style={styles.infoContainer}>
-            <Image source={sunset} style={styles.littleIcon} />
-            <View>
-              <Text>Sunset</Text>
-              {weatherData && (
-                <Text>
-                  {weatherData.forecastData.Sun.Set.substring(11, 16)}
-                </Text>
-              )}
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <Image source={wather} style={styles.littleIcon} />
-            <View>
-              <Text>Humidity</Text>
-              {weatherData && (
-                <Text>
-                  {weatherData.forecastData.Day.RelativeHumidity.Average}%
-                </Text>
-              )}
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <Image source={rain} style={styles.littleIcon} />
-            <View>
-              <Text>Rain</Text>
-
-              {weatherData && (
-                <Text>{weatherData.forecastData.Day.RainProbability}%</Text>
-              )}
-            </View>
-          </View>
-        </View>
-      </View>
-      <Text style={styles.footer}>Developer: Gabriel Pádua</Text>
-    </View>
+    </ImageBackground>
   );
 }
 
