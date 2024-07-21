@@ -31,14 +31,38 @@ export default function App() {
 
   const imageMap = {
     sun: require("./img/weather/ensolarado.png"),
-    sol: require("./img/weather/ensolarado.png"),
-    sol: require("./img/weather/ensolarado.png"),
-    sol: require("./img/weather/ensolarado.png"),
-    sol: require("./img/weather/ensolarado.png"),
-    sol: require("./img/weather/ensolarado.png"),
-    sol: require("./img/weather/ensolarado.png"),
-    sol: require("./img/weather/ensolarado.png"),
-  };
+    rain: require("./img/weather/nublado comchuva.png"),
+    storm: require("./img/weather/chuva com relâmpago.png"),
+    snow: require("./img/weather/neve.png"),
+    sc: require("./img/weather/sol entre nuvens.png"),
+    cloud: require("./img/weather/nublado.png"),
+    lightning: require("./img/weather/relâmpago.png"),
+    scr: require("./img/weather/sol entre nuves com chuva.png"),
+};
+
+const getWeatherIcon = (weatherText) => {
+    switch (weatherText) {
+        case "Sunny":
+            return imageMap.sun;
+        case "Rain":
+            return imageMap.rain;
+        case "Storm":
+            return imageMap.storm;
+        case "Snow":
+            return imageMap.snow;
+        case "Mostly cloudy":
+            return imageMap.sc;
+        case "Cloudy":
+            return imageMap.cloud;
+        case "Lightning":
+            return imageMap.lightning;
+        case "Partly sunny w/ showers":
+            return imageMap.scr;
+        default:
+            return imageMap.sun; // default case, in case of unknown weather text
+    }
+};
+
 
   const getClima = () => {
     // Reset weatherData to avoid previous data sticking around during the fetch
@@ -75,7 +99,7 @@ export default function App() {
       .then((forecastData) => {
         console.log("Third Endpoint Data:", forecastData);
 
-        // Merge data from the third endpoint into weatherData
+ 
         setWeatherData({
           locationData,
           currentConditionsData: currentConditionsData[0],
@@ -98,53 +122,62 @@ export default function App() {
     <ImageBackground
       source={
         isEnabled
-          ? require("./img/bg/bg-dark.png")
-          : require("./img/bg/bg-light.png")
+          ? require("./img/bg/bg-escuro.png")
+          : require("./img/bg/bg-claro.png")
       }
       style={styles.image}
     >
       <View style={styles.container}>
         <View style={styles.pesquisa}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, isEnabled ? styles.input : { borderColor: '#061D49', color: '#061D49' }]}
             onChangeText={(text) => setCity(text)}
             value={city}
             placeholder="Digite sua cidade"
+            placeholderTextColor={isEnabled ? "#FFFFFF" : "#061D49"}
           />
-          <Pressable style={styles.button} onPress={getClima}>
+          <Pressable style={[styles.button, isEnabled ? styles.button : { backgroundColor: '#6326AF', borderColor: '#061D49'}]} onPress={getClima}>
             <Text style={styles.text}>Procurar!</Text>
           </Pressable>
         </View>
         <View style={styles.hello}>
-          {weatherData && (
+           {weatherData && (
             <>
-              <Text style={styles.hi}>
-                Hi, {weatherData.locationData.EnglishName},{" "}
-                {weatherData.locationData.Country.LocalizedName}
+              <Text
+                style={[ styles.day, isEnabled ? styles.day : {color: "#061D49"} ]}
+              >
+                Day {dayAndMonth}
               </Text>
-              <Text style={styles.have}>
-                {isDayTime ? "Bom dia" : "Boa noite"}
+              <Text style={[styles.have, isEnabled && { color: "#FFFFFF" }]}>
+                {isDayTime ? "Have a good day" : "Have a good night"}
               </Text>
             </>
+          )} 
+          {weatherData && (
+            <Text style={[styles.cidade, isEnabled && { color: "#FFFFFF" }]}>
+              {weatherData.locationData?.LocalizedName}{" "}
+            </Text>
+          )}
+          {weatherData && (
+            <Text style={[styles.pais, isEnabled && { color: "#61D0E1" }]}>
+              {weatherData.locationData?.Country.LocalizedName}
+            </Text>
           )}
         </View>
         <View style={styles.weatherContainer}>
           {weatherData && (
             <>
-              <Image source={ensolarado} style={styles.weatherIcons} />
-              <Text style={styles.tempText}>
+              <Image source={getWeatherIcon(weatherData.currentConditionsData.WeatherText)} style={styles.weatherIcons} />
+              <Text style={isEnabled ? styles.tempTextEnabled : styles.tempText }>
                 {weatherData.currentConditionsData.Temperature.Metric.Value}C°
               </Text>
-              <Text style={styles.weatherText}>
+              <Text style={isEnabled ? styles.weatherTextEnabled : styles.weatherText}>
                 {weatherData.currentConditionsData.WeatherText}
               </Text>
             </>
           )}
-          {weatherData && (
-            <Text style={styles.weatherText}>Day {dayAndMonth}</Text>
-          )}
         </View>
-        <View style={styles.column0}>
+        <View style={isEnabled ? styles.column0Enabled : styles.column0}>
           <View style={styles.column1}>
             <View style={styles.infoContainer}>
               <Image
@@ -156,9 +189,15 @@ export default function App() {
                 style={styles.littleIcon}
               />
               <View>
-                <Text>Nascer do Sol</Text>
+                <Text
+                  style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                >
+                  Nascer do Sol
+                </Text>
                 {weatherData && (
-                  <Text>
+                  <Text
+                    style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                  >
                     {weatherData.forecastData.Sun.Rise.substring(11, 16)}
                   </Text>
                 )}
@@ -174,9 +213,15 @@ export default function App() {
                 style={styles.littleIcon}
               />
               <View>
-                <Text>Qualidade do ar</Text>
+                <Text
+                  style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                >
+                  Qualidade do ar
+                </Text>
                 {weatherData && (
-                  <Text>
+                  <Text
+                    style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                  >
                     {weatherData.forecastData.AirAndPollen[0].Category}
                   </Text>
                 )}
@@ -192,10 +237,16 @@ export default function App() {
                 style={styles.littleIcon}
               />
               <View>
-                <Text>Velocidade do vento</Text>
+                <Text
+                  style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                >
+                  Velocidade do vento
+                </Text>
 
                 {weatherData && (
-                  <Text>
+                  <Text
+                    style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                  >
                     {(
                       weatherData.forecastData.Day.Wind.Speed.Value * 1.60934
                     ).toFixed(2)}{" "}
@@ -217,9 +268,15 @@ export default function App() {
                 style={styles.littleIcon}
               />
               <View>
-                <Text>Pôr do Sol</Text>
+                <Text
+                  style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                >
+                  Pôr do Sol
+                </Text>
                 {weatherData && (
-                  <Text>
+                  <Text
+                    style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                  >
                     {weatherData.forecastData.Sun.Set.substring(11, 16)}
                   </Text>
                 )}
@@ -235,9 +292,15 @@ export default function App() {
                 style={styles.littleIcon}
               />
               <View>
-                <Text>Umidade</Text>
+                <Text
+                  style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                >
+                  Umidade
+                </Text>
                 {weatherData && (
-                  <Text>
+                  <Text
+                    style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                  >
                     {weatherData.forecastData.Day.RelativeHumidity.Average}%
                   </Text>
                 )}
@@ -253,10 +316,18 @@ export default function App() {
                 style={styles.littleIcon}
               />
               <View>
-                <Text>Chuva</Text>
+                <Text
+                  style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                >
+                  Chuva
+                </Text>
 
                 {weatherData && (
-                  <Text>{weatherData.forecastData.Day.RainProbability}%</Text>
+                  <Text
+                    style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
+                  >
+                    {weatherData.forecastData.Day.RainProbability}%
+                  </Text>
                 )}
               </View>
             </View>
@@ -289,55 +360,93 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     width: 220,
-    borderColor: "gray",
+    borderColor: "#61D0E1",
     borderRadius: 20,
-    borderWidth: 1,
+    borderWidth: 1.5,
     marginBottom: 10,
     paddingHorizontal: 10,
+    color: '#FFFFFF'
   },
   hi: {
     fontSize: 17,
   },
   have: {
-    fontSize: 25,
+    fontSize: 18,
+    color: "#6326AF"
+  },
+  day: {
+    fontSize: 18,
+    color: "#FFBE3E",
   },
   weatherContainer: {
-    marginTop: 40,
+    marginTop: 30,
     alignItems: "center",
   },
   tempText: {
     marginTop: 15,
-    fontSize: 45,
+    fontSize: 28,
+    color: "#061D49",
+    fontWeight: 'bold'
+  },
+  tempTextEnabled: {
+    marginTop: 15,
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: "#FFFFFF",
   },
   weatherText: {
-    fontSize: 20,
+    fontSize: 18,
+    color: "#061D49",
+  },
+  weatherTextEnabled: {
+    fontSize: 18,
+    color: "#61D0E1"
   },
   button: {
     marginLeft: 10,
     width: 80,
     height: 40,
-    backgroundColor: "#453264",
-    borderRadius: 45,
+    backgroundColor: "#154D8A",
     alignItems: "center",
     justifyContent: "center",
+    borderTopRightRadius: 40,
+    borderBottomRightRadius: 40,
+    borderColor: "#61D0E1",
+    borderWidth: 1.5,
   },
   text: {
     fontSize: 16,
     color: "#FBEAFF",
   },
   hello: {
-    paddingTop: 20,
-    paddingLeft: 30,
+    paddingTop: 5,
+    alignItems: "center",
   },
   weatherIcons: {
-    width: 250,
-    height: 250,
+    width: 175,
+    height: 175,
   },
   column0: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
     marginTop: 40,
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
+    borderRadius: 27,
+    marginHorizontal: 30,
+    alignItems: "center",
+    paddingTop: 20,
+  },
+  column0Enabled: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginTop: 40,
+    backgroundColor: "rgba(200, 251, 255, 0.15)",
+    borderRadius: 27,
+    marginHorizontal: 30,
+    alignItems: "center",
+    paddingTop: 20,
   },
   infoContainer: {
     marginBottom: 30,
@@ -352,6 +461,21 @@ const styles = StyleSheet.create({
   },
   littleIcon: {
     height: 50,
-    width: 50,
+    width: 50
+  },
+  textos: {
+    color: "#061D49",
+  },
+  cidade: {
+    color: "#6326AF",
+    fontSize: 40,
+    fontWeight: "700",
+    fontFamily: "",
+    marginTop: 35,
+  },
+  pais: {
+    color: "#061D49",
+    fontSize: 25,
+    marginTop: -7,
   },
 });
