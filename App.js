@@ -89,6 +89,7 @@ const getWeatherIcon = (weatherText) => {
       .then((data) => {
         currentConditionsData = data; // Assign data to currentConditionsData
         console.log("Second Endpoint Data:", currentConditionsData);
+        
 
         // Fetch data from the third endpoint
         return fetch(
@@ -139,6 +140,12 @@ const getWeatherIcon = (weatherText) => {
           <Pressable style={[styles.button, isEnabled ? styles.button : { backgroundColor: '#6326AF', borderColor: '#061D49'}]} onPress={getClima}>
             <Text style={styles.text}>Procurar!</Text>
           </Pressable>
+          <Switch id="switch"
+          trackColor={{ false: "#6326AF", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#6326AF" : "#61D0E1"}
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
         </View>
         <View style={styles.hello}>
            {weatherData && (
@@ -333,12 +340,6 @@ const getWeatherIcon = (weatherText) => {
             </View>
           </View>
         </View>
-        <Switch
-          trackColor={{ false: "#6326AF", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#6326AF" : "#61D0E1"}
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
         <Text style={styles.footer}>Developer: Gabriel Pádua</Text>
       </View>
     </ImageBackground>
@@ -431,7 +432,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     marginTop: 40,
-    backgroundColor: "rgba(0, 0, 0, 0.15)",
+    backgroundColor: "rgba(0, 0, 0, 0.10)",
     borderRadius: 27,
     marginHorizontal: 30,
     alignItems: "center",
@@ -477,5 +478,5 @@ const styles = StyleSheet.create({
     color: "#061D49",
     fontSize: 25,
     marginTop: -7,
-  },
+  }
 });
