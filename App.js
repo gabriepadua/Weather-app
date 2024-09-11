@@ -82,7 +82,7 @@ const getWeatherIcon = (weatherText) => {
 
         // Fetch data from the second endpoint
         return fetch(
-          `${baseUrl}currentconditions/v1/${locationKey}?apikey=${apiKey}`
+          `${baseUrl}currentconditions/v1/${locationKey}?apikey=${apiKey}&details=true`
         );
       })
       .then((response) => response.json())
@@ -138,7 +138,7 @@ const getWeatherIcon = (weatherText) => {
             placeholderTextColor={isEnabled ? "#FFFFFF" : "#061D49"}
           />
           <Pressable style={[styles.button, isEnabled ? styles.button : { backgroundColor: '#6326AF', borderColor: '#061D49'}]} onPress={getClima}>
-            <Text style={styles.text}>Procurar!</Text>
+            <Text style={styles.text}>Search!</Text>
           </Pressable>
           <Switch id="switch"
           trackColor={{ false: "#6326AF", true: "#81b0ff" }}
@@ -199,7 +199,7 @@ const getWeatherIcon = (weatherText) => {
                 <Text
                   style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
                 >
-                  Nascer do Sol
+                  Sunrise
                 </Text>
                 {weatherData && (
                   <Text
@@ -223,7 +223,7 @@ const getWeatherIcon = (weatherText) => {
                 <Text
                   style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
                 >
-                  Qualidade do ar
+                  Air quality
                 </Text>
                 {weatherData && (
                   <Text
@@ -247,7 +247,7 @@ const getWeatherIcon = (weatherText) => {
                 <Text
                   style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
                 >
-                  Velocidade do vento
+                  Wind speed
                 </Text>
 
                 {weatherData && (
@@ -278,7 +278,7 @@ const getWeatherIcon = (weatherText) => {
                 <Text
                   style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
                 >
-                  Pôr do Sol
+                  Sunset
                 </Text>
                 {weatherData && (
                   <Text
@@ -302,7 +302,7 @@ const getWeatherIcon = (weatherText) => {
                 <Text
                   style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
                 >
-                  Umidade
+                  Humidity
                 </Text>
                 {weatherData && (
                   <Text
@@ -326,7 +326,7 @@ const getWeatherIcon = (weatherText) => {
                 <Text
                   style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
                 >
-                  Chuva
+                  Rain
                 </Text>
 
                 {weatherData && (
