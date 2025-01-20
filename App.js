@@ -27,7 +27,7 @@ export default function App() {
             placeholderTextColor={isEnabled ? "#FFFFFF" : "#061D49"}
           />
           <Pressable style={[styles.button, isEnabled ? styles.button : { backgroundColor: '#6326AF', borderColor: '#061D49'}]} onPress={getClima}>
-            <Text style={styles.text}>Procurar!</Text>
+            <Text style={styles.text}>Search!</Text>
           </Pressable>
           <Switch id="switch"
           trackColor={{ false: "#6326AF", true: "#81b0ff" }}
@@ -42,7 +42,7 @@ export default function App() {
               <Text
                 style={[ styles.day, isEnabled ? styles.day : {color: "#061D49"} ]}
               >
-                Day {dayAndMonth}
+                Dia {dayAndMonth}
               </Text>
               <Text style={[styles.have, isEnabled && { color: "#FFFFFF" }]}>
                 {isDayTime ? "Bom dia" : "Boa noite"}
@@ -167,7 +167,7 @@ export default function App() {
                 <Text
                   style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
                 >
-                  Pôr do Sol
+                  Por do Sol
                 </Text>
                 {weatherData && (
                   <Text
