@@ -15,7 +15,8 @@ export const styles = StyleSheet.create({
       height: 40,
       width: 220,
       borderColor: "#61D0E1",
-      borderRadius: 20,
+      borderTopRightRadius: 20,
+      borderBottomRightRadius: 20,
       borderWidth: 1.5,
       marginBottom: 10,
       paddingHorizontal: 10,
@@ -25,15 +26,16 @@ export const styles = StyleSheet.create({
       fontSize: 17,
     },
     have: {
-      fontSize: 18,
+      fontSize: 20,
       color: "#6326AF"
     },
     day: {
-      fontSize: 18,
+      fontSize: 20,
       color: "#FFBE3E",
+      marginTop: 5,
     },
     weatherContainer: {
-      marginTop: 30,
+      marginTop: 25,
       alignItems: "center",
     },
     tempText: {
@@ -122,14 +124,35 @@ export const styles = StyleSheet.create({
     },
     cidade: {
       color: "#6326AF",
-      fontSize: 40,
+      fontSize: 35,
       fontWeight: "700",
       fontFamily: "",
-      marginTop: 35,
+      marginTop: 30,
     },
     pais: {
       color: "#061D49",
       fontSize: 25,
       marginTop: -7,
-    }
+    },
+    autoCompleteContainer: {
+      marginTop: -10,
+      padding: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+      backgroundColor: '#fff',
+      color: '#000',
+      maxWidth: 310,
+      marginLeft: 30,
+      maxHeight: 200,
+      borderBottomLeftRadius: 15,
+      borderBottomRightRadius: 15,
+    },
+    autoCompleteText: {
+      padding: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+      backgroundColor: '#fff',
+      color: '#000',
+      height: 50,
+    },
   });

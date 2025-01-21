@@ -1,13 +1,38 @@
-import React from 'react';
-import { View, ImageBackground, TextInput, Pressable, Text, Image, Switch } from 'react-native';
-import { useDarkMode, useWeather } from './api'; // Import hooks from api.js
+import React, { useState, useEffect } from 'react';
+import { View, ImageBackground, TextInput, Pressable, Text, Image, Switch, Keyboard, FlatList } from 'react-native';
+import { useDarkMode, useWeather, fetchAutocompleteSuggestions } from './api';
 import { styles } from './styles';
 import { getWeatherIcon } from './pics';
 
 export default function App() {
   const { isEnabled, toggleSwitch } = useDarkMode();
   const { city, setCity, weatherData, getClima, isDayTime, dayAndMonth } = useWeather();
+  const [suggestions, setSuggestions] = useState([]);
 
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      const data = await fetchAutocompleteSuggestions(city);
+      setSuggestions(data);
+    };
+
+    if (city.length >= 3) {
+      fetchSuggestions();
+    } else {
+      setSuggestions([]);
+    }
+  }, [city]);
+
+  const handleSearchPress = () => {
+    Keyboard.dismiss();
+    getClima(city); 
+  };
+
+  const handleSuggestionPress = (suggestion) => {
+    setCity(suggestion.LocalizedName);
+    getClima(suggestion.LocalizedName);
+    setSuggestions([]);
+  };
+  
   return (
     <ImageBackground
       source={
@@ -26,8 +51,8 @@ export default function App() {
             placeholder="Digite sua cidade"
             placeholderTextColor={isEnabled ? "#FFFFFF" : "#061D49"}
           />
-          <Pressable style={[styles.button, isEnabled ? styles.button : { backgroundColor: '#6326AF', borderColor: '#061D49'}]} onPress={getClima}>
-            <Text style={styles.text}>Search!</Text>
+          <Pressable style={[styles.button, isEnabled ? styles.button : { backgroundColor: '#6326AF', borderColor: '#061D49'}]} onPress={handleSearchPress}>
+            <Text style={styles.text}>Procurar!</Text>
           </Pressable>
           <Switch id="switch"
           trackColor={{ false: "#6326AF", true: "#81b0ff" }}
@@ -36,6 +61,21 @@ export default function App() {
           value={isEnabled}
         />
         </View>
+        {city.length >= 3 && suggestions.length > 0 && (
+          <View style={styles.autoCompleteContainer}>
+            <FlatList
+              data={suggestions}
+              keyExtractor={(item) => item.Key}
+              renderItem={({ item }) => (
+                <Pressable onPress={() => handleSuggestionPress(item)}>
+                  <Text style={styles.autoCompleteText}>
+                    {item.LocalizedName}, {item.AdministrativeArea.LocalizedName}, {item.Country.LocalizedName}
+                  </Text>
+                </Pressable>
+              )}
+            />
+          </View>
+        )}
         <View style={styles.hello}>
            {weatherData && (
             <>
@@ -56,7 +96,8 @@ export default function App() {
           )}
           {weatherData && (
             <Text style={[styles.pais, isEnabled && { color: "#61D0E1" }]}>
-              {weatherData.locationData?.Country.LocalizedName}
+                            {weatherData.locationData?.AdministrativeArea.LocalizedName},{" "}
+                            {weatherData.locationData?.Country.LocalizedName}
             </Text>
           )}
         </View>
