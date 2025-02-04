@@ -1,38 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { View, ImageBackground, TextInput, Pressable, Text, Image, Switch, Keyboard, FlatList } from 'react-native';
-import { useDarkMode, useWeather, fetchAutocompleteSuggestions } from './api';
-import { styles } from './styles';
-import { getWeatherIcon } from './pics';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  ImageBackground,
+  TextInput,
+  Pressable,
+  Text,
+  Image,
+  Switch,
+  FlatList,
+} from "react-native";
+import { useDarkMode, useWeather, fetchAutocompleteSuggestions } from "./api";
+import { styles } from "./styles";
+import { getWeatherIcon } from "./pics";
 
 export default function App() {
   const { isEnabled, toggleSwitch } = useDarkMode();
-  const { city, setCity, weatherData, getClima, isDayTime, dayAndMonth } = useWeather();
+  const { city, setCity, weatherData, getClima, isDayTime, dayAndMonth } =
+    useWeather();
   const [suggestions, setSuggestions] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      const data = await fetchAutocompleteSuggestions(city);
-      setSuggestions(data);
-    };
+    if (!isTyping) return;
 
-    if (city.length >= 3) {
-      fetchSuggestions();
-    } else {
-      setSuggestions([]);
-    }
-  }, [city]);
+    console.log("useEffect triggered with city:", city);
+    const delayDebounceFn = setTimeout(async () => {
+      if (city.length >= 3) {
+        console.log("Fetching autocomplete suggestions for city:", city);
+        const data = await fetchAutocompleteSuggestions(city);
+        console.log("Autocomplete suggestions data:", data);
+        setSuggestions(data);
+      } else {
+        console.log("City length is less than 3, clearing suggestions");
+        setSuggestions([]);
+      }
+      setIsTyping(false);
+    }, 1000);
 
-  const handleSearchPress = () => {
-    Keyboard.dismiss();
-    getClima(city); 
+    return () => clearTimeout(delayDebounceFn);
+  }, [city, isTyping]);
+
+  const handleCitySelect = (selectedCity) => {
+    console.log("City selected from suggestions:", selectedCity);
+    const locationKey = selectedCity.Key;
+    getClima(locationKey);
+    setSuggestions([]);
   };
 
   const handleSuggestionPress = (suggestion) => {
+    console.log("Suggestion pressed:", suggestion);
     setCity(suggestion.LocalizedName);
-    getClima(suggestion.LocalizedName);
+    getClima(suggestion.Key);
     setSuggestions([]);
   };
-  
+
   return (
     <ImageBackground
       source={
@@ -45,21 +66,39 @@ export default function App() {
       <View style={styles.container}>
         <View style={styles.pesquisa}>
           <TextInput
-            style={[styles.input, isEnabled ? styles.input : { borderColor: '#061D49', color: '#061D49' }]}
-            onChangeText={(text) => setCity(text)}
+            style={[
+              styles.input,
+              isEnabled
+                ? styles.input
+                : { borderColor: "#061D49", color: "#061D49" },
+            ]}
+            onChangeText={(text) => {
+              console.log("City input changed:", text);
+              setCity(text);
+              setIsTyping(true);
+            }}
             value={city}
             placeholder="Digite sua cidade"
             placeholderTextColor={isEnabled ? "#FFFFFF" : "#061D49"}
           />
-          <Pressable style={[styles.button, isEnabled ? styles.button : { backgroundColor: '#6326AF', borderColor: '#061D49'}]} onPress={handleSearchPress}>
+          <Pressable
+            style={[
+              styles.button,
+              isEnabled
+                ? styles.button
+                : { backgroundColor: "#6326AF", borderColor: "#061D49" },
+            ]}
+            onPress={handleCitySelect}
+          >
             <Text style={styles.text}>Procurar!</Text>
           </Pressable>
-          <Switch id="switch"
-          trackColor={{ false: "#6326AF", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#6326AF" : "#61D0E1"}
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
+          <Switch
+            id="switch"
+            trackColor={{ false: "#6326AF", true: "#81b0ff" }}
+            thumbColor={isEnabled ? "#6326AF" : "#61D0E1"}
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
         </View>
         {city.length >= 3 && suggestions.length > 0 && (
           <View style={styles.autoCompleteContainer}>
@@ -69,7 +108,9 @@ export default function App() {
               renderItem={({ item }) => (
                 <Pressable onPress={() => handleSuggestionPress(item)}>
                   <Text style={styles.autoCompleteText}>
-                    {item.LocalizedName}, {item.AdministrativeArea.LocalizedName}, {item.Country.LocalizedName}
+                    {item.LocalizedName},{" "}
+                    {item.AdministrativeArea.LocalizedName},{" "}
+                    {item.Country.LocalizedName}
                   </Text>
                 </Pressable>
               )}
@@ -77,10 +118,13 @@ export default function App() {
           </View>
         )}
         <View style={styles.hello}>
-           {weatherData && (
+          {weatherData && (
             <>
               <Text
-                style={[ styles.day, isEnabled ? styles.day : {color: "#061D49"} ]}
+                style={[
+                  styles.day,
+                  isEnabled ? styles.day : { color: "#061D49" },
+                ]}
               >
                 Dia {dayAndMonth}
               </Text>
@@ -88,7 +132,7 @@ export default function App() {
                 {isDayTime ? "Bom dia" : "Boa noite"}
               </Text>
             </>
-          )} 
+          )}
           {weatherData && (
             <Text style={[styles.cidade, isEnabled && { color: "#FFFFFF" }]}>
               {weatherData.locationData?.LocalizedName}{" "}
@@ -96,19 +140,30 @@ export default function App() {
           )}
           {weatherData && (
             <Text style={[styles.pais, isEnabled && { color: "#61D0E1" }]}>
-                            {weatherData.locationData?.AdministrativeArea.LocalizedName},{" "}
-                            {weatherData.locationData?.Country.LocalizedName}
+              {weatherData.locationData?.AdministrativeArea.LocalizedName},{" "}
+              {weatherData.locationData?.Country.LocalizedName}
             </Text>
           )}
         </View>
         <View style={styles.weatherContainer}>
           {weatherData && (
             <>
-              <Image source={getWeatherIcon(weatherData.currentConditionsData.WeatherText)} style={styles.weatherIcons} />
-              <Text style={isEnabled ? styles.tempTextEnabled : styles.tempText }>
+              <Image
+                source={getWeatherIcon(
+                  weatherData.currentConditionsData.WeatherText
+                )}
+                style={styles.weatherIcons}
+              />
+              <Text
+                style={isEnabled ? styles.tempTextEnabled : styles.tempText}
+              >
                 {weatherData.currentConditionsData.Temperature.Metric.Value}C°
               </Text>
-              <Text style={isEnabled ? styles.weatherTextEnabled : styles.weatherText}>
+              <Text
+                style={
+                  isEnabled ? styles.weatherTextEnabled : styles.weatherText
+                }
+              >
                 {weatherData.currentConditionsData.WeatherText}
               </Text>
             </>
@@ -179,7 +234,6 @@ export default function App() {
                 >
                   Velocidade do vento
                 </Text>
-
                 {weatherData && (
                   <Text
                     style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
@@ -193,7 +247,6 @@ export default function App() {
               </View>
             </View>
           </View>
-
           <View style={styles.column2}>
             <View style={styles.infoContainer}>
               <Image
@@ -258,7 +311,6 @@ export default function App() {
                 >
                   Chuva
                 </Text>
-
                 {weatherData && (
                   <Text
                     style={[styles.textos, isEnabled && { color: "#61D0E1" }]}
@@ -274,4 +326,4 @@ export default function App() {
       </View>
     </ImageBackground>
   );
-};
+}

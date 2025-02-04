@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const apiKey = "2QOVyWSNAEqBA3pza57LB5DIY07VMuPQ";
 const baseUrl = "http://dataservice.accuweather.com/";
@@ -15,7 +15,9 @@ export const fetchAutocompleteSuggestions = async (query) => {
   }
 
   try {
-    const response = await fetch(`http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${query}`);
+    const response = await fetch(
+      `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${query}`
+    );
     const data = await response.json();
     return data;
   } catch (error) {
@@ -33,21 +35,18 @@ export const useWeather = () => {
     return `${date.getDate()}`;
   };
 
-  const getClima = (cityName) => {
+  const getClima = (locationKey) => {
     setWeatherData(null);
-
-    let locationKey;
     let locationData;
     let currentConditionsData;
 
-    fetch(`${baseUrl}locations/v1/cities/search?q=${cityName}&apikey=${apiKey}`)
+    fetch(`${baseUrl}locations/v1/${locationKey}?apikey=${apiKey}`)
       .then((response) => response.json())
       .then((data) => {
-        if (!data || data.length === 0) {
+        if (!data) {
           throw new Error("No location data found");
         }
-        locationData = data[0];
-        locationKey = locationData.Key;
+        locationData = data;
         console.log("First Endpoint Data:", locationData);
 
         return fetch(
@@ -68,7 +67,11 @@ export const useWeather = () => {
       })
       .then((response) => response.json())
       .then((forecastData) => {
-        if (!forecastData || !forecastData.DailyForecasts || forecastData.DailyForecasts.length === 0) {
+        if (
+          !forecastData ||
+          !forecastData.DailyForecasts ||
+          forecastData.DailyForecasts.length === 0
+        ) {
           throw new Error("No forecast data found");
         }
         console.log("Third Endpoint Data:", forecastData);
