@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-const apiKey = "2QOVyWSNAEqBA3pza57LB5DIY07VMuPQ";
+const apiKey = "";
 const baseUrl = "http://dataservice.accuweather.com/";
 
 export const useDarkMode = () => {
