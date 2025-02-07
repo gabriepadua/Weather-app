@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-const baseUrl = "http://localhost:3000/api"; // URL do seu servidor proxy
-
+const baseUrl = "http://localhost:3000/api";
 export const useDarkMode = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((prevState) => !prevState);
