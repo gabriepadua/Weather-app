@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 
-const apiKey = "2QOVyWSNAEqBA3pza57LB5DIY07VMuPQ";
-const baseUrl = "http://dataservice.accuweather.com/";
+const baseUrl = "http://localhost:3000/api"; // URL do seu servidor proxy
 
 export const useDarkMode = () => {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -16,7 +15,7 @@ export const fetchAutocompleteSuggestions = async (query) => {
 
   try {
     const response = await fetch(
-      `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${query}`
+      `${baseUrl}/locations/autocomplete?q=${query}`
     );
     const data = await response.json();
     return data;
@@ -40,7 +39,7 @@ export const useWeather = () => {
     let locationData;
     let currentConditionsData;
 
-    fetch(`${baseUrl}locations/v1/${locationKey}?apikey=${apiKey}`)
+    fetch(`${baseUrl}/locations/${locationKey}`)
       .then((response) => response.json())
       .then((data) => {
         if (!data) {
@@ -48,9 +47,13 @@ export const useWeather = () => {
         }
         locationData = data;
         console.log("First Endpoint Data:", locationData);
+        let lat = data.GeoPosition.Latitude;
+        let long = data.GeoPosition.Longitude;
+        console.log("a latitude é: ", lat);
+        console.log("a longitude é: ", long);
 
         return fetch(
-          `${baseUrl}currentconditions/v1/${locationKey}?apikey=${apiKey}&details=true`
+          `${baseUrl}/currentconditions/${locationKey}`
         );
       })
       .then((response) => response.json())
@@ -62,7 +65,7 @@ export const useWeather = () => {
         console.log("Second Endpoint Data:", currentConditionsData);
 
         return fetch(
-          `${baseUrl}forecasts/v1/daily/1day/${locationKey}?apikey=${apiKey}&details=true`
+          `${baseUrl}/forecasts/${locationKey}`
         );
       })
       .then((response) => response.json())
